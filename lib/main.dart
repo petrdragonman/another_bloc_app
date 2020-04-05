@@ -11,6 +11,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Another Bloc App',
+      theme: ThemeData(
+        primarySwatch: Colors.orange,
+      ),
+      debugShowCheckedModeBanner: false,
       home: HomePage(),
     );
   }
