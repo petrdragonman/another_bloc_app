@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import './employee.dart';
-import './employeeBloc.dart';
+import './item.dart';
+import './itemBloc.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -11,12 +11,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final EmployeeBloc _employeeBloc = EmployeeBloc();
+  final ItemBloc _itemBloc = ItemBloc();
 
   @override
   void dispose() {
     super.dispose();
-    _employeeBloc.dispose();
+    _itemBloc.dispose();
   }
 
   @override
@@ -26,57 +26,66 @@ class _HomePageState extends State<HomePage> {
         title: Text('another bloc app'),
       ),
       body: Container(
-        child: StreamBuilder<List<Employee>>(
-          stream: _employeeBloc.employeeListStream,
-          builder:
-              (BuildContext context, AsyncSnapshot<List<Employee>> snapshot) {
+        child: StreamBuilder<List<Item>>(
+          //stream: _employeeBloc.employeeListStream,
+          stream: _itemBloc.itemListStream,
+          builder: (BuildContext context, AsyncSnapshot<List<Item>> snapshot) {
             return ListView.builder(
               itemCount: snapshot.data.length,
               itemBuilder: (context, index) {
                 return Card(
                   elevation: 5.0,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Container(
                         padding: EdgeInsets.all(20.0),
-                        child: Text(
-                          snapshot.data[index].id.toString(),
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(20.0),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              snapshot.data[index].name,
-                              style: TextStyle(fontSize: 18.0),
+                              snapshot.data[index].title,
+                              style: TextStyle(
+                                  fontSize: 24.0, fontWeight: FontWeight.bold),
                             ),
-                            Text(
-                              snapshot.data[index].salary.toString(),
-                              style: TextStyle(fontSize: 16.0),
-                            ),
+                            snapshot.data[index].isVisible
+                                ? Text(
+                                    snapshot.data[index].username,
+                                    style: TextStyle(fontSize: 16.0),
+                                  )
+                                : Text(
+                                    'hidden, press icon to show',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                            snapshot.data[index].isVisible
+                                ? Text(
+                                    snapshot.data[index].password,
+                                    style: TextStyle(fontSize: 16.0),
+                                  )
+                                : Text(
+                                    'hidden, press icon to show',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
                           ],
                         ),
                       ),
                       Container(
                         child: IconButton(
-                          icon: Icon(Icons.thumb_up),
-                          color: Colors.green,
-                          onPressed: (){
-                            _employeeBloc.empployeeSalaryIncrementSink.add(snapshot.data[index]);
-                          },
-                        ),
-                      ),
-                      Container(
-                        child: IconButton(
-                          icon: Icon(Icons.thumb_down),
-                          color: Colors.red,
-                          onPressed: (){
-                            _employeeBloc.employeeSalaryDecrementSink.add(snapshot.data[index]);
-                          },
-                        ),
+                            icon: snapshot.data[index].isVisible
+                                ? Icon(
+                                    Icons.visibility,
+                                    color: Colors.orange,
+                                  )
+                                : Icon(Icons.visibility_off),
+                            onPressed: () {
+                              _itemBloc.showItemSink.add(snapshot.data[index]);
+                            }),
                       ),
                     ],
                   ),
